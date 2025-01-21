@@ -100,17 +100,17 @@ WSGI_APPLICATION = "teacher_tracker.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",  # Assumes BASE_DIR is defined
-    }
-}
 # DATABASES = {
-#     "default": dj_database_url.config(
-#         default=os.getenv("DB_URL")  # Fetch DB_URL from environment variables
-#     )
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",  # Assumes BASE_DIR is defined
+#     }
 # }
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.getenv("DB_URL")  # Fetch DB_URL from environment variables
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
