@@ -4,6 +4,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.timezone import make_aware
+from datetime import datetime
+from django.db.models import Sum
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from classrooms.models import Classroom
 from teachers.serializers import TeacherSerializer
@@ -98,19 +103,28 @@ def update_class(request, class_id):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # Only update the 'attended' field
+        # Update the 'attended' field if provided
         attended = request.data.get("attended")
         if attended is not None:
             class_instance.attended = attended
-            class_instance.save()
 
-            serializer = ClassSerializer(class_instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        # Update grade_letter, class_number, and date if provided
+        grade_letter = request.data.get("grade_letter")
+        class_number = request.data.get("class_number")
+        date = request.data.get("date")
 
-        return Response(
-            {"error": "Attendance status is required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        if grade_letter:
+            class_instance.classroom.grade_letter = grade_letter
+        if class_number:
+            class_instance.classroom.class_number = class_number
+        if date:
+            class_instance.date = date
+
+        # Save the class instance after modifications
+        class_instance.save()
+
+        serializer = ClassSerializer(class_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Class.DoesNotExist:
         return Response({"error": "Class not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -147,6 +161,9 @@ def list_classes_by_teacher(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def list_classes_by_date(request, date):
-    classes = Class.objects.filter(date=date)
+    teacher = request.user  # Get the authenticated teacher
+    classes = Class.objects.filter(
+        date=date, teacher=teacher
+    )  # Filter by both date and teacher
     serializer = ClassSerializer(classes, many=True)
     return Response(serializer.data)

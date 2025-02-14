@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     get_teacher_by_id,
     get_teacher_daily_schedule,
-    get_teacher_monthly_hours,
+    get_monthly_hours,
     register_teacher,
     update_attendance,
     update_teacher_monthly_hours,
@@ -30,8 +30,8 @@ urlpatterns = [
         name="get_teacher_daily_schedule",
     ),
     path(
-        "get_monthly_hours/",
-        get_teacher_monthly_hours,
-        name="get_teacher_monthly_hours",
+        "get_monthly_hours/<int:year>/<int:month>/",
+        get_monthly_hours,
+        name="get_monthly_hours",
     ),
 ]

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.forms import ValidationError
 from django.shortcuts import render
 
@@ -20,16 +20,16 @@ from .models import DailyHours
 def register_teacher(request):
     username = request.data.get("username")
     password = request.data.get("password")
-    confirm_password = request.data.get("confirmPassword")
+    confirmPassword = request.data.get("confirmPassword")
 
     # Ensure username, password, and name are provided
-    if not username or not password or not confirm_password:
+    if not username or not password or not confirmPassword:
         return Response(
             {"error": "Username, password and confirm password are required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    if password != confirm_password:
+    if password != confirmPassword:
         return Response(
             {"error": "Password and confirm password do not match"},
             status=status.HTTP_400_BAD_REQUEST,
