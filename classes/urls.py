@@ -3,6 +3,7 @@ from .views import (
     create_class,
     list_classes,
     delete_class,
+    monthly_hours,
     update_class,
     get_class_details,
     list_classes_by_teacher,
@@ -17,4 +18,5 @@ urlpatterns = [
     path("<int:class_id>/", get_class_details, name="get_class_details"),
     path("<int:class_id>/update/", update_class, name="update_class"),
     path("<int:class_id>/delete/", delete_class, name="delete_class"),
+    path("monthly-hours/", monthly_hours, name="monthly_hours"),
 ]

@@ -9,7 +9,8 @@ from datetime import datetime
 from django.db.models import Sum
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from django.db.models import Count
+from django.utils.timezone import now
 from classrooms.models import Classroom
 from teachers.serializers import TeacherSerializer
 from .models import Class
@@ -167,3 +168,17 @@ def list_classes_by_date(request, date):
     )  # Filter by both date and teacher
     serializer = ClassSerializer(classes, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def monthly_hours(request):
+    teacher = request.user  # Assuming the logged-in user is a Teacher
+    classes = (
+        Class.objects.filter(teacher=teacher)
+        .values("date__year", "date__month")  # Group by year and month
+        .annotate(total_hours=Count("id"))  # Count occurrences as total hours
+        .order_by("-date__year", "-date__month")  # Order by recent months first
+    )
+
+    return Response(list(classes))
